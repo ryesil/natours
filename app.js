@@ -42,7 +42,7 @@ app.use(express.json());
 //Since the file is String we need to parse it to Json object
 const tours =JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`))
 
-
+//this is amended
 app.get('/api/v1/tours',(req,res)=>{
    res.status(200).json({
     //below is json formatting standard
@@ -77,19 +77,39 @@ fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`, JSON.stringify(tour
 })
 
 //Getting one tour
+//: means variable
 app.get('/api/v1/tours/:id',(req,res)=>{
-    console.log(req.params.id)
-    const tour= tours.find(el=>':'+el.id === req.params.id)
+// app.get('/api/v1/tours/:id/:x/:v/:f/:r/:e?',(req,res)=>{
+    //Question mark at the end makes it optional not required
+    //Here is the log => { id: ':4', x: ':5', v: ':6', f: ':7', r: ':8', e: ':9' }
+    //keys are the ones we define here in the path. Values come from the get request.
+    const toursLength = tours.length;
+    console.log(req.params)
+    const id = req.params.id*1;
+    //If there is no tour it will be undefined
+    const tour= tours.find(el=> el.id === id)
+    
+    //if(id>toursLength-1){
+    if(!tour){
+
+        res.status(404).json({
+            status:"fail",
+            message:`No such tour exists with ${id}`
+        }
+        )
+    } else{
  res.status(200).json(
     {
         status:'success',
         data:{
-            tour:tour
+            //tour:tour
+            tour
         }
     }
  )
-    // })
- })
+}
+    })
+
 
 const port=3000;
 app.listen(port,()=>{'/'

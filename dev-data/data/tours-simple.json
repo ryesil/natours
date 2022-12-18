@@ -190,13 +190,6 @@
 		"difficulty": "easy"
 	},
 	{
-		"id": 10,
-		"name": "Test tour",
-		"duration": 99,
-		"difficulty": "easy",
-		"price": 1497
-	},
-	{
 		"id": 11,
 		"name": "Test tour",
 		"duration": 10,

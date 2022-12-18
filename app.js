@@ -101,13 +101,25 @@ fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`,JSON.stringify(tours
     ).catch(err=>console.log(err))
 })
 //console.log(req.body)
-
-
-
 })
 
+app.delete('/api/v1/tours/:id',(req,res)=>{
 
+    if(req.params.id*1>tours.length-1){
+        res.status(404).json({
+            status:"fail",
+            message:`No such id ${req.params.id}`
+        })
+    }
 
+ const newTours = tours.filter(el=>el.id !== req.params.id*1)
+ fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`,JSON.stringify(newTours, null, "\t"), (err)=>{
+    res.status(202).json({
+        status:'success',
+        data:null
+    }).catch(err=>console.log(err))
+})
+})
 //Getting one tour
 //: means variable
 app.get('/api/v1/tours/:id',(req,res)=>{

@@ -86,7 +86,9 @@ if(req.params.id*1>tours.length-1){
 }
 let tour = tours.find(el=>el.id===req.params.id*1)
 
-tour[Object.keys(req.body)[0]]=Object.values(req.body)[0]
+for(let i=0;i<Object.keys(req.body).length;i++){
+tour[Object.keys(req.body)[i]]=Object.values(req.body)[i]
+}
 
 fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`,JSON.stringify(tours, null, "\t"), (err)=>{
     res.status(200).json({

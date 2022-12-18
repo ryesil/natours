@@ -114,6 +114,7 @@ app.delete('/api/v1/tours/:id',(req,res)=>{
 
  const newTours = tours.filter(el=>el.id !== req.params.id*1)
  fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`,JSON.stringify(newTours, null, "\t"), (err)=>{
+      //202 => no Content
     res.status(202).json({
         status:'success',
         data:null

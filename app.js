@@ -42,7 +42,6 @@ app.use(express.json());
 //Since the file is String we need to parse it to Json object
 const tours =JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`))
 
-//this is amended
 app.get('/api/v1/tours',(req,res)=>{
    res.status(200).json({
     //below is json formatting standard
@@ -75,6 +74,37 @@ fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`, JSON.stringify(tour
     })
 }) 
 })
+//put receives entire updated object
+//patch receives properties that are updated on the object
+app.patch('/api/v1/tours/:id',(req,res)=>{
+//get the file change and then save it again
+if(req.params.id*1>tours.length-1){
+    res.status(404).json({
+        status:"fail",
+        message:`There is no such tour with ID: ${req.params.id}`
+    })
+}
+let tour = tours.find(el=>el.id===req.params.id*1)
+
+tour[Object.keys(req.body)[0]]=Object.values(req.body)[0]
+
+fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`,JSON.stringify(tours, null, "\t"), (err)=>{
+    res.status(200).json({
+        status:"success",
+        data:{
+            tour
+        }
+    }
+    
+    ).catch(err=>console.log(err))
+})
+//console.log(req.body)
+
+
+
+})
+
+
 
 //Getting one tour
 //: means variable

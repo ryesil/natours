@@ -42,68 +42,97 @@ app.use(express.json());
 //Since the file is String we need to parse it to Json object
 const tours =JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`))
 
-app.get('/api/v1/tours',(req,res)=>{
-   res.status(200).json({
-    //below is json formatting standard
-    status:'success',//success,fail, or error
-    data:{
-        tours:tours
-    }
-
-   })
-})
-
-console.log(tours);
-
-app.post('/api/v1/tours',(req,res)=>{
-//body is available on the request
-//console.log(req.body);
-const newId = tours[tours.length-1].id+1;
-const newTour= Object.assign({id:newId},req.body)
-tours.push(newTour);
-//now we need to persist data to the file
-console.log(tours)
-fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`, JSON.stringify(tours),(err)=>{ 
-    res.status(201).json({
-        status:"success",
-        data:{
-            newTour:newTour
-        }
-    }).catch(err=>{
-        res.send("eben")
-    })
-}) 
-})
-//put receives entire updated object
-//patch receives properties that are updated on the object
-app.patch('/api/v1/tours/:id',(req,res)=>{
-//get the file change and then save it again
-if(req.params.id*1>tours.length-1){
-    res.status(404).json({
-        status:"fail",
-        message:`There is no such tour with ID: ${req.params.id}`
-    })
-}
-let tour = tours.find(el=>el.id===req.params.id*1)
-
-for(let i=0;i<Object.keys(req.body).length;i++){
-tour[Object.keys(req.body)[i]]=Object.values(req.body)[i]
-}
-
-fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`,JSON.stringify(tours, null, "\t"), (err)=>{
+const getAllTours = (req,res)=>{
     res.status(200).json({
-        status:"success",
-        data:{
-            tour
+     //below is json formatting standard
+     status:'success',//success,fail, or error
+     data:{
+         tours:tours
+     }
+ 
+    })
+ }
+
+//Getting one tour
+//: means variable
+const getTour = (req,res)=>{
+    // app.get('/api/v1/tours/:id/:x/:v/:f/:r/:e?',(req,res)=>{
+        //Question mark at the end makes it optional not required
+        //Here is the log => { id: ':4', x: ':5', v: ':6', f: ':7', r: ':8', e: ':9' }
+        //keys are the ones we define here in the path. Values come from the get request.
+        const toursLength = tours.length;
+        console.log(req.params)
+        const id = req.params.id*1;
+        //If there is no tour it will be undefined
+        const tour= tours.find(el=> el.id === id)
+        
+        //if(id>toursLength-1){
+        if(!tour){
+    
+            res.status(404).json({
+                status:"fail",
+                message:`No such tour exists with ${id}`
+            }
+            )
+        } else{
+     res.status(200).json(
+        {
+            status:'success',
+            data:{
+                //tour:tour
+                tour
+            }
         }
+     )
+    }
+        }
+ 
+const makeTour = (req,res)=>{
+    //body is available on the request
+    //console.log(req.body);
+    const newId = tours[tours.length-1].id+1;
+    const newTour= Object.assign({id:newId},req.body)
+    tours.push(newTour);
+    //now we need to persist data to the file
+    console.log(tours)
+    fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`, JSON.stringify(tours),(err)=>{ 
+        res.status(201).json({
+            status:"success",
+            data:{
+                newTour:newTour
+            }
+        }).catch(err=>{
+            res.send("eben")
+        })
+    }) 
+    }  
+ const updateTour = (req,res)=>{
+    //get the file change and then save it again
+    if(req.params.id*1>tours.length-1){
+        res.status(404).json({
+            status:"fail",
+            message:`There is no such tour with ID: ${req.params.id}`
+        })
+    }
+    let tour = tours.find(el=>el.id===req.params.id*1)
+    
+    for(let i=0;i<Object.keys(req.body).length;i++){
+    tour[Object.keys(req.body)[i]]=Object.values(req.body)[i]
     }
     
-    ).catch(err=>console.log(err))
-})
-//console.log(req.body)
-})
-
-app.delete('/api/v1/tours/:id',(req,res)=>{
+    fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`,JSON.stringify(tours, null, "\t"), (err)=>{
+        res.status(200).json({
+            status:"success",
+            data:{
+                tour
+            }
+        }
+        
+        ).catch(err=>console.log(err))
+    })
+    //console.log(req.body)
+    }
+ const deleteTour = (req,res)=>{
 
     if(req.params.id*1>tours.length-1){
         res.status(404).json({
@@ -120,40 +149,23 @@ app.delete('/api/v1/tours/:id',(req,res)=>{
         data:null
     }).catch(err=>console.log(err))
 })
-})
-//Getting one tour
-//: means variable
-app.get('/api/v1/tours/:id',(req,res)=>{
-// app.get('/api/v1/tours/:id/:x/:v/:f/:r/:e?',(req,res)=>{
-    //Question mark at the end makes it optional not required
-    //Here is the log => { id: ':4', x: ':5', v: ':6', f: ':7', r: ':8', e: ':9' }
-    //keys are the ones we define here in the path. Values come from the get request.
-    const toursLength = tours.length;
-    console.log(req.params)
-    const id = req.params.id*1;
-    //If there is no tour it will be undefined
-    const tour= tours.find(el=> el.id === id)
-    
-    //if(id>toursLength-1){
-    if(!tour){
+}   
 
-        res.status(404).json({
-            status:"fail",
-            message:`No such tour exists with ${id}`
-        }
-        )
-    } else{
- res.status(200).json(
-    {
-        status:'success',
-        data:{
-            //tour:tour
-            tour
-        }
-    }
- )
-}
-    })
+// app.get('/api/v1/tours',getAllTours)
+// app.post('/api/v1/tours',makeTour)
+app
+.route('/api/v1/tours')
+.get(getAllTours).post(makeTour)
+// app.get('/api/v1/tours/:id',getTour)
+//put receives entire updated object
+//patch receives properties that are updated on the object
+// app.patch('/api/v1/tours/:id',updateTour)
+// app.delete('/api/v1/tours/:id',deleteTour)
+
+app
+.route('/api/v1/tours/:id')
+.get(getTour).patch(updateTour)
+.delete(deleteTour)
 
 
 const port=3000;

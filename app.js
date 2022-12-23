@@ -155,7 +155,6 @@ app.get('/api/v1/tours/:id',(req,res)=>{
 }
     })
 
-
 const port=3000;
 app.listen(port,()=>{'/'
     console.log(`App is running on port ${port}...`)

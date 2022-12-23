@@ -1,3 +1,4 @@
+const e = require('express');
 const express = require('express');
 const fs = require('fs');
 const app=express();
@@ -41,6 +42,14 @@ app.use(express.json());
 // main folder (/Downloads/complete-node-bootcamp-master/complete-node-bootcamp-master/4-natours/starter ).
 //Since the file is String we need to parse it to Json object
 const tours =JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`))
+const isIdExist = (tours,id)=>{
+    const idList = [];
+    tours.forEach(el => {
+        idList.push(el.id)
+    });
+    return tours.includes(id*1)
+}
+
 
 const getAllTours = (req,res)=>{
     res.status(200).json({
@@ -68,7 +77,6 @@ const getTour = (req,res)=>{
         
         //if(id>toursLength-1){
         if(!tour){
-    
             res.status(404).json({
                 status:"fail",
                 message:`No such tour exists with ${id}`
@@ -95,7 +103,7 @@ const makeTour = (req,res)=>{
     tours.push(newTour);
     //now we need to persist data to the file
     console.log(tours)
-    fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`, JSON.stringify(tours),(err)=>{ 
+    fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`, JSON.stringify(tours, null, "\t"),(err)=>{ 
         res.status(201).json({
             status:"success",
             data:{
@@ -108,14 +116,14 @@ const makeTour = (req,res)=>{
     }  
  const updateTour = (req,res)=>{
     //get the file change and then save it again
-    if(req.params.id*1>tours.length-1){
+    if(isIdExist(tours,req.params.id)){
         res.status(404).json({
             status:"fail",
             message:`There is no such tour with ID: ${req.params.id}`
         })
+        return
     }
     let tour = tours.find(el=>el.id===req.params.id*1)
-    
     for(let i=0;i<Object.keys(req.body).length;i++){
     tour[Object.keys(req.body)[i]]=Object.values(req.body)[i]
     }
@@ -134,7 +142,7 @@ const makeTour = (req,res)=>{
     }
  const deleteTour = (req,res)=>{
 
-    if(req.params.id*1>tours.length-1){
+    if(isIdExist(tours,req.params.id)){
         res.status(404).json({
             status:"fail",
             message:`No such id ${req.params.id}`

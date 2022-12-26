@@ -1,4 +1,4 @@
-const e = require('express');
+const morgan = require('morgan');
 const express = require('express');
 const fs = require('fs');
 const app=express();
@@ -6,7 +6,23 @@ const app=express();
 //middleware is a function stands between req and res. 
 //before the below code we did a post and it didn't work.
 //The post worked with the below midleware code
+//It parses incoming requests with JSON payloads and is based on body-parser. 
+//morgan is to log coming req
+app.use(morgan('dev'))
 app.use(express.json());
+
+
+
+
+
+//In each middleware function, we have req, res, and next function
+// app.use((req,res,next)=>{
+//     //in every req this will popup b/c we put a middleware in to the pipeline
+//     console.log("Hello from the middleWare");
+//     //we gotta use next function to move on to the next middleware
+//     next();
+// })
+
 
 // //we can do all http request using the same url.
 // app.get('/',(req,res)=>{
@@ -148,7 +164,6 @@ const makeTour = (req,res)=>{
             message:`No such id ${req.params.id}`
         })
     }
-
  const newTours = tours.filter(el=>el.id !== req.params.id*1)
  fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`,JSON.stringify(newTours, null, "\t"), (err)=>{
       //202 => no Content
@@ -158,6 +173,41 @@ const makeTour = (req,res)=>{
     }).catch(err=>console.log(err))
 })
 }   
+
+const getAllUsers = (req,res)=>{
+    res.status(500).json({
+        status:'error',
+        message:"This route is not yet defined"
+    })
+}
+
+const getUser = (req,res)=>{
+    res.status(500).json({
+        status:'error',
+        message:"This route is not yet defined"
+    })
+}
+const updateUser = (req,res)=>{
+    res.status(500).json({
+        status:'error',
+        message:"This route is not yet defined"
+    })
+}
+const createUser = (req,res)=>{
+    res.status(500).json({
+        status:'error',
+        message:"This route is not yet defined"
+    })
+}
+const deleteUSer = (req,res)=>{
+    res.status(500).json({
+        status:'error',
+        message:"This route is not yet defined"
+    })
+}
+
+
+
 
 // app.get('/api/v1/tours',getAllTours)
 // app.post('/api/v1/tours',makeTour)
@@ -174,6 +224,16 @@ app
 .route('/api/v1/tours/:id')
 .get(getTour).patch(updateTour)
 .delete(deleteTour)
+
+app.route('/api/v1/users')
+.get(getAllUsers)
+.post(createUser)
+
+app.route('/api/v1/users/:id')
+.get(getUser)
+.patch(updateUser)
+.delete(deleteUSer)
+
 
 
 const port=3000;

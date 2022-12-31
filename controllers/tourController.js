@@ -16,18 +16,32 @@ exports.getAllTours = (req,res)=>{
          tours:tours
      }
  
+    }).catch(err=>{
+        res.send(err)
     })
  }
 
 
 //Getting one tour
-exports.isIdExist = (tours,id)=>{
+//We used it in route.param middleware. Instead of checking for id in every req. This will deter it from happining
+exports.isIdExist = (req,res,next,val)=>{
+    const tours = JSON.parse(fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`));
     const idList = [];
     tours.forEach(el => {
         idList.push(el.id)
     });
-    return tours.includes(id*1)
+    if(!idList.includes(val*1)){
+      //the return is important here. If we don't return then express will continue running and 
+      //it will try to send another response which will cause an error.  
+      return  res.status(404).json({
+            status:'fail',
+            message:`No tour exists with id ${req.params.id}`
+        })
+
+    }
+    next();
 }
+
 //: means variable
 exports.getTour = (req,res)=>{
     // app.get('/api/v1/tours/:id/:x/:v/:f/:r/:e?',(req,res)=>{
@@ -78,21 +92,15 @@ exports.makeTour = (req,res)=>{
             res.send("eben")
         })
     }) 
-    }  
+    }
+
     exports.updateTour = (req,res)=>{
     //get the file change and then save it again
-    if(isIdExist(tours,req.params.id)){
-        res.status(404).json({
-            status:"fail",
-            message:`There is no such tour with ID: ${req.params.id}`
-        })
-        return
-    }
     let tour = tours.find(el=>el.id===req.params.id*1)
     for(let i=0;i<Object.keys(req.body).length;i++){
     tour[Object.keys(req.body)[i]]=Object.values(req.body)[i]
     }
-    
+
     fs.writeFile(`${__dirname}/../dev-data/data/tours-simple.json`,JSON.stringify(tours, null, "\t"), (err)=>{
         res.status(200).json({
             status:"success",
@@ -100,25 +108,18 @@ exports.makeTour = (req,res)=>{
                 tour
             }
         }
-        
         ).catch(err=>console.log(err))
     })
     //console.log(req.body)
     }
-    exports.deleteTour = (req,res)=>{
 
-    if(isIdExist(tours,req.params.id)){
-        res.status(404).json({
-            status:"fail",
-            message:`No such id ${req.params.id}`
-        })
-    }
-exports.newTours = tours.filter(el=>el.id !== req.params.id*1)
+exports.deleteTour = (req,res)=>{
+const newTours = tours.filter(el=>el.id !== req.params.id*1)
  fs.writeFile(`${__dirname}/../dev-data/data/tours-simple.json`,JSON.stringify(newTours, null, "\t"), (err)=>{
       //202 => no Content
     res.status(202).json({
         status:'success',
         data:null
-    }).catch(err=>console.log(err))
+    })
 })
 }  

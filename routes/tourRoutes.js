@@ -5,6 +5,10 @@ const tourController = require('../controllers/tourController')
 const router = express.Router();
 
 
+//if no id then ignored
+//In the param middleware we have access to the id. so it is like router.param('id',(req,res,next,val)=>{})
+router.param('id',tourController.isIdExist)
+
 router
 .route('/')
 .get(tourController.getAllTours)

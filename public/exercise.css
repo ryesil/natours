@@ -1,0 +1,30 @@
+.c1{
+    position: relative;
+   height: 100px;
+   width: 100px;
+    background-color: pink;
+
+
+}
+
+.c2{
+    position: relative;
+   height: 100px;
+   width: 100px;
+    background-color: pink;
+
+
+}
+
+.c3{
+    position: relative;
+   height: 100px;
+   width: 100px;
+    background-color: pink;
+
+
+}
+
+#id1{
+  background-color: red;  
+}

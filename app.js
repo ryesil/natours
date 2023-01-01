@@ -1,7 +1,8 @@
-const tourRouter = require('./routes/tourRoutes')
-const userRouter = require('./routes/userRoutes');
 const morgan = require('morgan');
 const express = require('express');
+const tourRouter = require('./routes/tourRoutes')
+const userRouter = require('./routes/userRoutes');
+
 const app=express();
 
 //middleware is a function stands between req and res. 
@@ -10,12 +11,14 @@ const app=express();
 //It parses incoming requests with JSON payloads and is based on body-parser. 
 //morgan is to log coming req
 
+//Logging should happen when in development not in production
+if(process.env.NODE_ENV === 'development'){
 app.use(morgan('dev'))
+}
 app.use(express.json());
-
-app.param
-
-
+//in order to see static files like overview.html or an image we use express.static()
+//Below we can access anything in the public directory
+app.use(express.static(`${__dirname}/public`))
 
 //In each middleware function, we have req, res, and next function
 // app.use((req,res,next)=>{
@@ -25,6 +28,10 @@ app.param
 //     next();
 // })
 
+app.use((req,res,next)=>{
+    req.requestTime = new Date().toISOString();
+    next();
+})
 
 // //we can do all http request using the same url.
 // app.get('/',(req,res)=>{
@@ -54,13 +61,6 @@ app.param
 //         response:"You can put to this endPoint"
 //     })
 // })
-
-
-
-
-
-
-
 
 
 // app.get('/api/v1/tours',getAllTours)

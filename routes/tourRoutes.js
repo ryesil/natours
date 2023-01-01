@@ -12,7 +12,7 @@ router.param('id',tourController.isIdExist)
 router
 .route('/')
 .get(tourController.getAllTours)
-.post(tourController.makeTour)
+.post(tourController.checkBody,tourController.makeTour)
 
 // app
 // .route('/api/v1/tours')

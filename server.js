@@ -1,5 +1,6 @@
 //This is where we do all the setup for our application
 const dotenv = require('dotenv');
+//All we want in this server is the database connection.
 const mongoose = require('mongoose');
 //Careful above dotenv must be read before app. Otherwise we cannot read the config file in the app.js
 dotenv.config({ path: './config.env' });
@@ -18,32 +19,7 @@ mongoose.connect(DB, {
 // console.log("db Connection successful")
  }).then(() => console.log("Database Connection successful"))
 
- //In order to use mongoose we need schema and model
- //A simple schema w/o options
-//  const tourSchema = new mongoose.Schema({
-//     name: String,
-//     rating: Number,
-//     price: Number
-//  })
-//Schema with options
-const tourSchema = new mongoose.Schema({
-    name: {
-        type:String,
-        required:[true, "A tour must have a name"],
-        unique:true
-    },
-    rating: {
-        type:Number,
-        default:4.5
-    },
-    price: {
-        type:Number,
-        required:[true, 'A tour must have a price']
-    }
- });
 
-//Time for a module. modules names are capital
-const Tour = mongoose.model('Tour',tourSchema)
 
 const app = require('./app');
 //prints all the environment variables and process.env has access to them

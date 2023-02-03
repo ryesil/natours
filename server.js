@@ -1,10 +1,11 @@
-//This is where we do all the setup for our application
-const dotenv = require('dotenv');
 //All we want in this server is the database connection.
 const mongoose = require('mongoose');
+//This is where we do all the setup for our application
+const dotenv = require('dotenv');
 //Careful above dotenv must be read before app. Otherwise we cannot read the config file in the app.js
 dotenv.config({ path: './config.env' });
 const DB = process.env.DATABASE.replace("<PASSWORD>",process.env.DATABASE_PASSWORD)
+const app = require('./app');
 
 //Below we connected to the Atlas database. IF we use local we just change the name to local
 //Below first we provide the db then put in some options for deprecation warnings
@@ -21,7 +22,6 @@ mongoose.connect(DB, {
 
 
 
-const app = require('./app');
 //prints all the environment variables and process.env has access to them
 //console.log(process.env);
 

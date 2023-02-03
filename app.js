@@ -42,6 +42,7 @@ app.use(express.json());
 //Since the file is String we need to parse it to Json object
 const tours =JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`))
 
+
 app.get('/api/v1/tours',(req,res)=>{
    res.status(200).json({
     //below is json formatting standard

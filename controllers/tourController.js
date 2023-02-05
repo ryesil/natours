@@ -4,16 +4,21 @@ const Tour = require('../models/tourModel');
 exports.getAllTours = async (req, res) => {
 
   try{
-    //We can get the filtering from the URL(after the ? mark) by using req.query
-    //http://localhost:3000/api/v1/tours?duration=5&difficulty=easy returns { duration: '5', difficulty: 'easy' }
-    //console.log(req.query)
-   //There are two ways of filtering first reqular mongodb find query
-   //const tours = await Tour.find({duration:5,difficulty:'easy'})
-    //Second way using mongoose way
-    //const tour = await Tour.find().where('duration').equals(5).where('difficulty').equals('easy')
-    
+    //FIRST BUID THE QUERY
+//we will filter according to the req.query
+//we need a hardcopy of the query
+const queryObj = {...req.query};
+//So we remove the following keys from URL since we will handle them later. 
+const excludedFields = ['page', 'sort', 'limit', 'fields'];
+excludedFields.forEach(el=>{delete queryObj[el]})
+//Original query finder without filtering
+// const tours = await Tour.find({});
+//with filtering For more about query() object You can check the documentation
+//THEN EXECUTE THE QUERY
+const query =  Tour.find(queryObj);
+const tours = await query;
 
-  const tours = await Tour.find({});
+//SEND RESPONSE
   res.status(200).json({
     status: 'success',
     data:{
@@ -50,12 +55,9 @@ res.status(401).json({
 
 };
 
-// We used try catch b/c of the async/await (promise return)
+
 exports.makeTour = async (req, res) => {
- //req.body
- //we did using model like let newTour = new Tour({...})
-//newTour.save(); Below is the new Way. Returns a promise
-//Since Tour is an async function we can write async at the begining of the function insted of writing then() below
+
 try {
 const newTour = await Tour.create(req.body)
 
@@ -64,7 +66,7 @@ res.status(201).json({
   data:{
     tour:newTour
   }
-})//validation error will be taken 4oo is for bad request
+})
 } catch(err) {
 res.status(400).json({
   status:'fail',

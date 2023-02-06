@@ -43,7 +43,15 @@ console.log(sortBy) //GET /api/v1/tours?sort=-price,ratingsAverage => -price rat
   query = query.sort('-createdAt')
 }
 
-
+//3) Field Limiting
+if(req.query.fields){
+  const fields = req.query.fields.split(',').join(' ');
+  query = query.select(fields)
+}else{
+  //If we use - (minus) in select. It means unselect
+  //Some information must be hidden from the client. Then we do it at the schema level. See createdAt
+  query = query.select('-__v');
+}
 
 //THEN EXECUTE THE QUERY
 

@@ -57,7 +57,9 @@ const tourSchema = new mongoose.Schema({
     images:[String],
     createdAt:{
         type:Date,
-        default:Date.now()
+        default:Date.now(),
+        //So this is a sensitive info. We don't want to send it to client. Then we just exclude it at schema level
+        select:false
     },
     startDates:[Date]
  });

@@ -7,15 +7,46 @@ exports.getAllTours = async (req, res) => {
     //FIRST BUILD THE QUERY
 //we will filter according to the req.query
 //we need a hardcopy of the query
+//console.log(req.query) // Here is what we received GET /api/v1/tours?duration[$gte]=5&difficulty=easy =>{ duration: { '$gte': '5' }, difficulty: 'easy' } 
+//1A) FILTERING
 const queryObj = {...req.query};
-//So we remove the following keys from URL since we will handle them later. 
 const excludedFields = ['page', 'sort', 'limit', 'fields'];
 excludedFields.forEach(el=>{delete queryObj[el]})
-//Original query finder without filtering
-// const tours = await Tour.find({});
-//with filtering For more about query() object You can check the documentation
+
+//req.query should look like =>{difficulty: 'easy', duration:{$gte: 5}} we wrote it. Desired
+// what we got from /console.log(req.query)=>GET /api/v1/tours?duration[gte]=5&difficulty=easy =>{ duration: { 'gte': '5' }, difficulty: 'easy' } 
+
+//1B)ADVANCED FILTERING
+//So we are going to add $ sign. Basic Javascript
+let queryStr = JSON.stringify(queryObj);
+
+//replace method returns a callback function which excepts the matched value as an argument
+queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match =>`$${match}`) //\b...\b means exact values. Not in a word but  these exact words
+
+console.log(JSON.parse(queryStr)) //{ duration: { '$gte': '5' }, difficulty: 'easy', price: { '$lt': '1500' }}
+
+
+//We can chain more methods. That is why we put it in a variable.
+let query =  Tour.find(JSON.parse(queryStr));
+
+//2) SORTING
+if(req.query.sort){ //req.query is an object. We are looking for sort property
+//sorting in case of a tie=> sort('price ratingsAverage')
+// in the API, sorting fields will come with a coma. http://localhost:3000/api/v1/tours?sort=-price,ratingsAverage.We will replace it with a space
+const sortBy = req.query.sort.split(',').join(' ');
+
+console.log(sortBy) //GET /api/v1/tours?sort=-price,ratingsAverage => -price ratingsAverage
+  query = query.sort(sortBy)
+
+  //default sorting
+} else {
+  query = query.sort('-createdAt')
+}
+
+
+
 //THEN EXECUTE THE QUERY
-const query =  Tour.find(queryObj);
+
 const tours = await query;
 
 //SEND RESPONSE

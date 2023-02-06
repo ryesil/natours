@@ -4,7 +4,7 @@ const Tour = require('../models/tourModel');
 exports.getAllTours = async (req, res) => {
 
   try{
-    //FIRST BUID THE QUERY
+    //FIRST BUILD THE QUERY
 //we will filter according to the req.query
 //we need a hardcopy of the query
 const queryObj = {...req.query};
